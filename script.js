@@ -135,3 +135,21 @@ downloadBtn.addEventListener('click', (e) => {
     }
     qrCode.download({ name: "QR_Code", extension: "png" });
 });
+
+// Theme Toggle Logic
+function setTheme(isDark) {
+    if (isDark) {
+        document.body.classList.remove('light-mode');
+    } else {
+        document.body.classList.add('light-mode');
+    }
+}
+
+// Check system preference on load
+const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+setTheme(prefersDarkScheme.matches);
+
+// Listen for system changes
+prefersDarkScheme.addEventListener("change", (e) => {
+    setTheme(e.matches);
+});
