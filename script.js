@@ -1,48 +1,137 @@
 const qrText = document.getElementById('qr-text');
-const sizes = document.getElementById('sizes');
-const generateBtn = document.getElementById('generateBtn');
 const downloadBtn = document.getElementById('downloadBtn');
-const qrContainer = document.querySelector('.qr-body');
+const qrContainer = document.getElementById('qr-container');
+const toast = document.getElementById('toast');
+const toastMessage = document.getElementById('toast-message');
 
-let size = sizes.value;
-generateBtn.addEventListener('click',(e)=>{
-    e.preventDefault();
-    isEmptyInput();
+// Customization Inputs
+const colorDots = document.getElementById('color-dots');
+const colorBg = document.getElementById('color-bg');
+const dotsStyle = document.getElementById('dots-style');
+const cornerSquareStyle = document.getElementById('corner-square-style');
+const logoUrl = document.getElementById('logo-url');
+
+// Update Hex Values visually
+colorDots.addEventListener('input', (e) => {
+    e.target.nextElementSibling.textContent = e.target.value;
+});
+colorBg.addEventListener('input', (e) => {
+    e.target.nextElementSibling.textContent = e.target.value;
 });
 
-sizes.addEventListener('change',(e)=>{
-    size = e.target.value;
-    isEmptyInput();
-});
+// Tab Switching Logic
+const tabBtns = document.querySelectorAll('.tab-btn');
+const tabPanes = document.querySelectorAll('.tab-pane');
 
-downloadBtn.addEventListener('click', ()=>{
-    let img = document.querySelector('.qr-body img');
-
-    if(img !== null){
-        let imgAtrr = img.getAttribute('src');
-        downloadBtn.setAttribute("href", imgAtrr);
-    }
-    else{
-        downloadBtn.setAttribute("href", `${document.querySelector('canvas').toDataURL()}`);
-    }
-});
-
-function isEmptyInput(){
-    // if(qrText.value.length > 0){
-    //     generateQRCode();
-    // }
-    // else{
-    //     alert("Enter the text or URL to generate your QR code");
-    // }
-    qrText.value.length > 0 ? generateQRCode() : alert("Enter the text or URL to generate your QR code");;
-}
-function generateQRCode(){
-    qrContainer.innerHTML = "";
-    new QRCode(qrContainer, {
-        text:qrText.value,
-        height:size,
-        width:size,
-        colorLight:"#fff",
-        colorDark:"#000",
+tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        // Remove active class from all
+        tabBtns.forEach(b => b.classList.remove('active'));
+        tabPanes.forEach(p => p.classList.remove('active'));
+        
+        // Add active class to clicked tab
+        btn.classList.add('active');
+        const tabId = btn.getAttribute('data-tab');
+        document.getElementById(`tab-${tabId}`).classList.add('active');
     });
+});
+
+// Toast Notification
+function showToast(message) {
+    toastMessage.textContent = message;
+    toast.classList.add('show');
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
 }
+
+// QR Code Instance
+const qrCode = new QRCodeStyling({
+    width: 300,
+    height: 300,
+    margin: 15,
+    type: "canvas",
+    data: "https://example.com",
+    image: "",
+    dotsOptions: {
+        color: "#000000",
+        type: "square"
+    },
+    backgroundOptions: {
+        color: "#ffffff",
+    },
+    imageOptions: {
+        crossOrigin: "anonymous",
+        margin: 10
+    },
+    cornersSquareOptions: {
+        type: "square",
+        color: "#000000"
+    }
+});
+
+// Real-time Generate Logic
+const allInputs = [qrText, colorDots, colorBg, dotsStyle, cornerSquareStyle, logoUrl];
+allInputs.forEach(input => {
+    input.addEventListener('input', () => {
+        if (qrText.value.trim().length > 0) {
+            generateQRCode();
+        } else {
+            qrContainer.innerHTML = `
+                <div class="empty-state">
+                    <i class="ph ph-image"></i>
+                    <p>Your QR code will appear here</p>
+                </div>
+            `;
+            downloadBtn.classList.add('disabled');
+        }
+    });
+});
+
+qrText.addEventListener('change', () => {
+    const val = qrText.value.trim();
+    if (val.length > 0 && !val.includes('http://') && !val.includes('https://')) {
+        showToast("Please include 'http://' or 'https://' in the URL for better compatibility.");
+    }
+});
+
+function generateQRCode() {
+    // Clear container
+    qrContainer.innerHTML = "";
+    
+    // Update options from inputs
+    qrCode.update({
+        data: qrText.value,
+        margin: 15,
+        image: logoUrl.value.trim(),
+        dotsOptions: {
+            color: colorDots.value,
+            type: dotsStyle.value
+        },
+        backgroundOptions: {
+            color: colorBg.value,
+        },
+        cornersSquareOptions: {
+            type: cornerSquareStyle.value,
+            color: colorDots.value
+        }
+    });
+    
+    // Append to DOM
+    qrCode.append(qrContainer);
+    
+    // Enable download button
+    setTimeout(() => {
+        downloadBtn.classList.remove('disabled');
+    }, 100);
+}
+
+// Download Logic
+downloadBtn.addEventListener('click', (e) => {
+    if (downloadBtn.classList.contains('disabled')) {
+        e.preventDefault();
+        return;
+    }
+    qrCode.download({ name: "QR_Code", extension: "png" });
+});

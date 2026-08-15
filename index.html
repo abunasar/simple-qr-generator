@@ -4,38 +4,148 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta id="ios-header-color" name="theme-color" content="#1D59F9" />
+    <meta name="msapplication-TileColor" content="#1D59F9">
+    <meta name="apple-mobile-web-app-title" content="QRFY">
+    <meta property="og:site_name" content="QRFY · QR Code Generator">
+    <meta name="author" content="QRFY · QR Code Generator">
+    <meta name="keywords" content="qr, qr code, qr code generator, create qr code, generate qr code free, make qr code, generate qr code for website">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://qrfy.com">
+    <meta property="og:title" content="QR Code Generator: Create your QR easily">
+    <meta property="og:description" content="QR Code Generator for Websites, Video, PDF and more. Customize with logo, colors, and frames. Download in high-res.">
+    <meta property="og:image" content="https://qrfy.com/QRFY_OG-image.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://qrfy.com">
+    <meta property="twitter:title" content="QR Code Generator: Create your QR easily">
+    <meta property="twitter:description" content="QR Code Generator for Websites, Video, PDF and more. Customize with logo, colors, and frames. Download in high-res.">
+    <meta property="twitter:image" content="https://qrfy.com/QRFY_OG-image.png">
+
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+      {
+        "@context" : "https://schema.org",
+        "@type" : "WebSite",
+        "name" : "QRFY · QR Code Generator",
+        "url" : "https://qrfy.com/"
+      }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="style.css">
-    <title>QR Code Generator | Code Traversal</title>
+    <title>QR Code Generator: Create your Free QR code</title>
 </head>
 <body>
-    <div class="box">
-        <div class="qr-header">
-            <h1>Generate QR Code</h1>
-            <input type="text" placeholder="Type your text or URL" id="qr-text">
-            <div>
-            <label for="sizes">Select Size:</label>
-            <select id="sizes">
-                <option value="100">100x100</option>
-                <option value="200">200x200</option>
-                <option value="300">300x300</option>
-                <option value="400">400x400</option>
-                <option value="500">500x500</option>
-                <option value="600">600x600</option>
-                <option value="700">700x700</option>
-                <option value="800">800x800</option>
-                <option value="900">900x900</option>
-                <option value="1000">1000x1000</option>
-            </select>
+    <div id="toast" class="toast hidden">
+        <i class="ph-fill ph-warning-circle"></i>
+        <span id="toast-message">Please enter a valid URL or text.</span>
+    </div>
+
+    <!-- Decorative background blobs -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="container">
+        <!-- Customization Panel -->
+        <div class="panel config-panel">
+            <div class="panel-header">
+                <h1><i class="ph ph-qr-code"></i> Generate QR</h1>
+            </div>
+            
+            <div class="input-group main-input">
+                <i class="ph ph-link"></i>
+                <input type="text" placeholder="Enter URL or text here" id="qr-text" autocomplete="off">
+            </div>
+
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="colors">Colors</button>
+                <button class="tab-btn" data-tab="shapes">Shapes</button>
+                <button class="tab-btn" data-tab="logo">Logo</button>
+            </div>
+
+            <div class="tab-content">
+                <!-- Colors Tab -->
+                <div class="tab-pane active" id="tab-colors">
+                    <div class="form-group">
+                        <label>Foreground Color</label>
+                        <div class="color-picker">
+                            <input type="color" id="color-dots" value="#000000">
+                            <span class="color-val">#000000</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Background Color</label>
+                        <div class="color-picker">
+                            <input type="color" id="color-bg" value="#ffffff">
+                            <span class="color-val">#ffffff</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shapes Tab -->
+                <div class="tab-pane" id="tab-shapes">
+                    <div class="form-group">
+                        <label>Dots Style</label>
+                        <select id="dots-style">
+                            <option value="square">Square</option>
+                            <option value="dots">Dots</option>
+                            <option value="rounded">Rounded</option>
+                            <option value="extra-rounded">Extra Rounded</option>
+                            <option value="classy">Classy</option>
+                            <option value="classy-rounded">Classy Rounded</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Corner Square Style</label>
+                        <select id="corner-square-style">
+                            <option value="square">Square</option>
+                            <option value="dot">Dot</option>
+                            <option value="extra-rounded">Extra Rounded</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Logo Tab -->
+                <div class="tab-pane" id="tab-logo">
+                    <div class="form-group">
+                        <label>Logo Image URL</label>
+                        <div class="input-group">
+                            <i class="ph ph-image"></i>
+                            <input type="text" id="logo-url" placeholder="https://example.com/logo.png">
+                        </div>
+                        <small>Leave empty for no logo</small>
+                    </div>
+                </div>
+            </div>
+
         </div>
-        </div>
-        <div class="qr-body"></div>
-        <div class="qr-footer">
-            <a href="" id="generateBtn">Generate</a>
-            <a href="" id="downloadBtn" download="QR_Code.png">Download</a>
+
+        <!-- Preview Panel -->
+        <div class="panel preview-panel">
+            <div class="qr-body" id="qr-container">
+                <div class="empty-state">
+                    <i class="ph ph-image"></i>
+                    <p>Your QR code will appear here</p>
+                </div>
+            </div>
+            
+            <button id="downloadBtn" class="btn btn-secondary disabled">
+                <i class="ph ph-download-simple"></i> Download Image
+            </button>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
     <script src="script.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </body>
 </html>
